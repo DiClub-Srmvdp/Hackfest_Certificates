@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Certificate Lookup</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Styles for the particle background */
+        #particles-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        #lookupForm {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #fff;
+        }
+
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #certificateLink {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #fff;
+        }
+
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        /* Styles for the live background video */
+        #wallpaper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -2;
+        }
+
+        /* Styles for the club logo */
+        #logo {
+            position: absolute;
+            top: 20px;
+            right: 20px; 
+            z-index: 1;
+            max-width: 100px; 
+            max-height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Live background video -->
+    <video id="wallpaper" autoplay muted loop>
+        <source src="Live_BG.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <!-- Club logo -->
+    <div id="logo">
+        <img src="logo.png" alt="Club Logo" width="100%" height="auto">
+    </div>
+    
+    <!-- Particle background container -->
+    <div id="particles-container"></div>
+
+    <!-- Certificate lookup content -->
+    <h1>HACKFEST 2.0 <br> Round 1 Certificate</h1>
+    <form id="lookupForm">
+        <select id="participantSelect">
+            <option value="" disabled selected>Your Name</option>
+        </select>
+        <button type="submit">Get Certificate</button>
+    </form>
+    <div id="certificateLink"></div>
+
+    <!-- Particle.js library -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    
+    <!-- JavaScript code -->
+    <script>
+        const participantSelect = document.getElementById('participantSelect');
+
+        fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vTrrnfK-mxAy145ofDMCNfnGXAlsI90jVHqy3VYWUmUCjxn5wwUMTs0xOMrw1Kdbakv4vNXq51CUX6r/pub?gid=0&single=true&output=csv')
+            .then(response => response.text())
+            .then(data => {
+            const csvRows = data.split('\n');
+
+            for (const row of csvRows) {
+                const [name, certificateNumber] = row.split(',');
+                const trimmedName = name.trim();
+                const trimmedCertificateNumber = certificateNumber.trim();
+                if (trimmedName && trimmedCertificateNumber) {
+                    const option = document.createElement('option');
+                    option.value = trimmedCertificateNumber;
+                    option.textContent = trimmedName;
+                    participantSelect.appendChild(option);
+                }
+            }
+        });
+        
+        const form = document.getElementById('lookupForm');
+        const certificateLink = document.getElementById('certificateLink');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const selectedCertificateNumber = participantSelect.value;
+            certificateLink.innerHTML = `<a href="${selectedCertificateNumber}" target="_blank">Download Certificate</a>`;
+        });
+
+        // Initialize particle background
+        particlesJS('particles-container', {
+            particles: {
+                number: {
+                    value: 100,
+                    density: {
+                        enable: true,
+                        value_area: 1500
+                    }
+                },
+                color: {
+                    value: '#777', // Grey color for particles
+                },
+                shape: {
+                    type: 'Cube', // Cube shape
+                },
+                
+            },
+            interactivity: {
+            },
+            retina_detect: true
+        });
+    </script>
+</body>
+</html>
